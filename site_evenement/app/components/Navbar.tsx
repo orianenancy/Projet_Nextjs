@@ -10,7 +10,6 @@ import gsap from 'gsap';
 import { link } from 'fs';
 
 
-
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -18,6 +17,34 @@ export default function Navbar() {
   const titleref = useRef(null);
   const linkref = useRef(null);
   const logoref = useRef(null);
+  
+  
+  const [isPresentationOpen, setIsPresentationOpen] = useState(false);
+  const timeoutRef = useRef(null);
+
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    setIsPresentationOpen(true);
+  };
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setIsPresentationOpen(false);
+    }, 280);
+  };
+
+  const eventTypes = [
+    "Conventions",
+    "Conférences",
+    "Cérémonies et remises de prix",
+    "Forums de recrutement et job datings",
+    "Assemblées générales",
+    "Séminaires et Team Building",
+    "Soirées d'entreprises"
+  ];
+
 
   //GSAP animation pour le titre
   useLayoutEffect(() => {
@@ -44,6 +71,7 @@ export default function Navbar() {
     <nav className={`fixed w-full z-50 transition-all duration-300 ${
       isScrolled ? 'bg-white shadow-md py-2' : 'bg-transparent py-4'
     }`}>
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
           {/* Logo */}
@@ -60,20 +88,73 @@ export default function Navbar() {
             <Link href="/" className="text-gray-900 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">
               Accueil
             </Link>
-            <Link href="/Prestation" className="text-gray-900 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">
-              Prestations
-            </Link>
-            <Link href="/Explorer" className="text-gray-900 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">
+
+            {/* === CONTAINER (Prestations + Menu + zone tampon) === */}
+            <div
+              className="relative"
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
+              <div className="flex items-center text-gray-800 hover:text-blue-600 px-3 py-2 text-sm font-medium transition cursor-pointer">
+                Prestations
+                <svg
+                  className={`w-3 h-3 ml-1 text-gray-500 transition-transform duration-300 ${isPresentationOpen ? 'rotate-180 text-blue-600' : ''}`}
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+
+              {/* ZONE TAMPON */}
+              <div className="absolute left-1/2 -translate-x-[55%] w-[6vw] h-2.5 z-10" />
+
+              {/* MENU DÉROULANT */}
+              <div className={`absolute left-1/2 z-20 mt-2 w-[70vw] bg-[#f5fdff] rounded-xl shadow-xl border border-gray-200 flex transition-all duration-450 ease-out transform
+                ${isPresentationOpen
+                ? 'opacity-100 translate-x-[-45%] scale-100 translate-y-0 visible'
+                : 'opacity-0 scale-95 translate-x-[-45%] translate-y-4 pointer-events-none'
+                }`}
+              >
+                {/* LIENS */}
+                <div className="w-[60%] grid grid-cols-2 gap-6 p-6">
+                  {eventTypes.map((type) => (
+                    <Link
+                      key={type}
+                      href="#"
+                      className="block text-sm text-gray-700 hover:text-blue-600 transition"
+                    >
+                      {type}
+                    </Link>
+                  ))}
+                </div>
+
+                {/* IMAGE */}
+                <div className="w-[40%] flex items-center justify-center p-6 border-l border-gray-200">
+                  <div className="w-[60%] h-[200px] bg-gray-100 rounded-md overflow-hidden flex items-center justify-center">
+                    <img
+                      src="/presentation-menu.avif"
+                      alt="Illustration"
+                      className="object-contain w-full h-full"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <Link href="./Explorer/" className="text-gray-900 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">
               Explorer
             </Link>
-            <Link href="/Quinoussommes" className="text-gray-900 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">
+            <Link href="./Quinoussommes/" className="text-gray-900 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors">
               Qui sommes-nous ?
             </Link>
           </div>
 
           {/* Bouton CTA */}
           <div className="hidden md:flex">
-            <Link ref={linkref} href="/Demande" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
+            <Link ref={linkref} href="/inscription" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
               Demander une démo
             </Link>
           </div>
@@ -98,13 +179,40 @@ export default function Navbar() {
           <Link href="/" className="block text-gray-900 hover:bg-gray-100 px-3 py-2 rounded-md text-base font-medium">
             Accueil
           </Link>
-          <Link href="/Prestation" className="block text-gray-900 hover:bg-gray-100 px-3 py-2 rounded-md text-base font-medium">
-            Prestations
-          </Link>
-          <Link href="/Explorer" className="block text-gray-900 hover:bg-gray-100 px-3 py-2 rounded-md text-base font-medium">
+          <div className="relative">
+            <button
+              onClick={() => setIsPresentationOpen(!isPresentationOpen)}
+              className="w-full flex justify-between items-center px-3 py-2 text-gray-800 hover:text-blue-600"
+            >
+              Prestations
+              {isPresentationOpen
+                ? <svg className="w-3 h-3 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                </svg>
+                : <svg className="w-3 h-3 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>}
+            </button>
+
+            {isPresentationOpen && (
+              <div className="pl-4">
+                {eventTypes.map((type) => (
+                  <Link
+                    key={type}
+                    href="#"
+                    className="block px-3 py-2 text-sm text-gray-700 hover:text-blue-600"
+                  >
+                    {type}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <Link href="./Explorer/" className="block text-gray-900 hover:bg-gray-100 px-3 py-2 rounded-md text-base font-medium">
             Explorer
           </Link>
-          <Link href="/Quinoussommes" className="block text-gray-900 hover:bg-gray-100 px-3 py-2 rounded-md text-base font-medium">
+          <Link href="./Quinoussommes/" className="block text-gray-900 hover:bg-gray-100 px-3 py-2 rounded-md text-base font-medium">
             Qui sommes-nous ?
           </Link>
           <Link href="/demander_demo" className="block bg-blue-600 text-white px-3 py-2 rounded-md text-base font-medium">

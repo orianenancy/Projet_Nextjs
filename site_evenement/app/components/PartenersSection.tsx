@@ -78,15 +78,7 @@ export default function PartnersSection() {
         "+=0.3"
       );
 
-      // Animation de la grenouille (rebond continue)
-      gsap.to(frogRef.current, {
-        y: -15,
-        duration: 1.5,
-        ease: "bounce.out",
-        repeat: -1,
-        yoyo: true,
-        repeatDelay: 1
-      });
+      
     }
   }, []);
 
@@ -105,9 +97,7 @@ export default function PartnersSection() {
           </p>
         </div>
         
-        <div ref={frogRef} className="flex justify-center mb-12">
-          <div className="text-5xl animate-bounce">🐸😁</div>
-        </div>
+        
 
         <div 
           ref={partnersRef}
